@@ -13,7 +13,7 @@ username = os.environ['USERNAME']
 password = os.environ['PASSWORD']
 
 s2py = Scratch2Py(username, password)
-project = s2py.scratchConnect('597674126')
+project = s2py.scratchConnect('596980037')
 
 def getWeather(city):
     api = "https://api.openweathermap.org/data/2.5/weather?q="+city+"&units=imperial&appid="+API_KEY
