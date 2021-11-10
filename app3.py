@@ -13,7 +13,7 @@ username = os.environ['USERNAME']
 password = os.environ['PASSWORD']
 
 s2py = Scratch2Py(username, password)
-project = s2py.scratchConnect('596894703')
+project = s2py.scratchConnect('597674126')
 
 def getWeather(city):
     api = "https://api.openweathermap.org/data/2.5/weather?q="+city+"&units=imperial&appid="+API_KEY
@@ -38,32 +38,38 @@ def getWeather(city):
 
         return location, condition, description, temperature, feels_like_temperature, max_temperature, min_temperature, humidity, cloud_coverage
     elif r.status_code == 404:
-        print("Location not Found!")
+        print("Requested location not found!")
 
-last_request = None
+        return "Location Not Found"
+
 variables = ['location', 'condition', 'description', 'temp', 'feels like temp', 'max temp', 'min temp', 'humidity', 'cloud coverage']
 while True:
     request = project.readCloudVar('request')
     #print(request)
-    if last_request != request:
-        print("New request intetified.")
-        decoded_request = s2py.decode(request)
-        #print(decoded_request)
-        #location, condition, description, temperature, feels_like_temperature, max_temperature, min_temperature, humidity, cloud_coverage = getWeather(decoded_request)
-        weather = getWeather(decoded_request)
-        weather = (weather)
-        print(weather)
-        y = 0
-        for x in range(0, 9):
-            print(weather[y])
-            try:
-                project.setCloudVar(variables[y], s2py.encode(weather[y]))
-            except AttributeError:
-                project.setCloudVar(variables[y], s2py.encode(str(round(weather[y]))))
-            y += 1
-        project.setCloudVar('request', '1')
-        print("Request submitted")
-        last_request = '1'
+    if request != '1':
+        if request == '2':
+            print('No new requests.')
+        else:    
+            print("New request intetified.")
+            decoded_request = s2py.decode(request)
+            #print(decoded_request)
+            #location, condition, description, temperature, feels_like_temperature, max_temperature, min_temperature, humidity, cloud_coverage = getWeather(decoded_request)
+            weather = getWeather(decoded_request)
+            if weather == "Location Not Found":
+                project.setCloudVar('request', '2')
+            else:
+                #print(weather)
+                y = 0
+                for x in range(0, 9):
+                    #print(weather[y])
+                    try:
+                        project.setCloudVar(variables[y], s2py.encode(weather[y]))
+                    except TypeError:
+                        project.setCloudVar(variables[y], s2py.encode(str(round(weather[y]))))
+                    y += 1
+            project.setCloudVar('request', '1')
+            print("Request submitted")
+
     else:
-        print('Same old thing')
-    time.sleep(3) 
+        print('No new requests.')
+    time.sleep(30) 
