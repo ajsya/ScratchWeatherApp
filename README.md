@@ -5,7 +5,7 @@ Get the weather for the location of your choice in real-time... on Scratch!
 
 ## Requirements
 - Python3
-- [Scratch](https://scratch.mit.edu/join) Bot Account with "Scratcher" status.
+- [Scratch](https://scratch.mit.edu/join) Account with "Scratcher" status.
 - [OpenWeatherMap API Key](https://openweathermap.org)
 - requests
 - scratch2py
