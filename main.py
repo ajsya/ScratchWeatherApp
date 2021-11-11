@@ -13,7 +13,7 @@ username = os.environ['USERNAME']
 password = os.environ['PASSWORD']
 
 s2py = Scratch2Py(username, password)
-project = s2py.scratchConnect('596980037')
+project = s2py.scratchConnect('597674126')
 
 def getWeather(city):
     api = "https://api.openweathermap.org/data/2.5/weather?q="+city+"&units=imperial&appid="+API_KEY
@@ -57,6 +57,7 @@ while True:
             weather = getWeather(decoded_request)
             if weather == "Location Not Found":
                 project.setCloudVar('request', '2')
+                print("Response submited: Location not Found; Code 2")
             else:
                 #print(weather)
                 y = 0
@@ -67,8 +68,8 @@ while True:
                     except TypeError:
                         project.setCloudVar(variables[y], s2py.encode(str(round(weather[y]))))
                     y += 1
-            project.setCloudVar('request', '1')
-            print("Request submitted")
+                project.setCloudVar('request', '1')
+                print("Response Submited: Date sent; Code 1")
 
     else:
         print('No new requests.')
