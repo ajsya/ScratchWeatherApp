@@ -14,7 +14,6 @@ password = os.environ['PASSWORD']
 
 user = scratchconnect.ScratchConnect(username, password)
 project = user.connect_project(619628679)  # Connect the project
-variables = project.connect_cloud_variables()  # Connect the project's cloud variables
 
 def getWeather(city):
     api = "https://api.openweathermap.org/data/2.5/weather?q="+city+"&units=imperial&appid="+API_KEY
@@ -45,6 +44,7 @@ def getWeather(city):
 
 #variables = ['location', 'condition', 'description', 'temp', 'feels like temp', 'max temp', 'min temp', 'humidity', 'cloud coverage']
 while True:
+    variables = project.connect_cloud_variables()
     request = variables.get_cloud_variable_value(variable_name='request')[0]
     #print(request)
     if request != '1':
@@ -69,4 +69,4 @@ while True:
 
     else:
         print('No new requests.')
-    time.sleep(30) 
+    time.sleep(15) 
