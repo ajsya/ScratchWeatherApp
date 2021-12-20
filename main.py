@@ -1,10 +1,11 @@
-#rewritten for scratch2py
+#v2 rewritten for scratchconnect in order to use list encryption
 
 import requests
-from scratch2py import Scratch2Py
+import scratchconnect
 from dotenv import load_dotenv
 import os
 import time
+import random
 
 load_dotenv()
 
@@ -12,8 +13,8 @@ API_KEY = os.environ['API_KEY']
 username = os.environ['USERNAME']
 password = os.environ['PASSWORD']
 
-s2py = Scratch2Py(username, password)
-project = s2py.scratchConnect('596980037')
+user = scratchconnect.ScratchConnect(username, password)
+project = user.connect_project(596980037)  # Connect the project
 
 def getWeather(city):
     api = "https://api.openweathermap.org/data/2.5/weather?q="+city+"&units=imperial&appid="+API_KEY
@@ -42,35 +43,44 @@ def getWeather(city):
 
         return "Location Not Found"
 
-variables = ['location', 'condition', 'description', 'temp', 'feels like temp', 'max temp', 'min temp', 'humidity', 'cloud coverage']
+RandomLocations = ['Toledo', 'Detriot', 'Columbus', 'Cleveland', 'Miami', 'Olympia', 'Washington DC', 'Boston', 'Kansas City', 'Orlando']
 while True:
-    request = project.readCloudVar('request')
+    variables = project.connect_cloud_variables()
+    request = variables.get_cloud_variable_value(variable_name='request')[0]
     #print(request)
     if request != '1':
         if request == '2':
             print('No new requests.')
-        else:    
-            print("New request intetified.")
-            decoded_request = s2py.decode(request)
-            #print(decoded_request)
-            #location, condition, description, temperature, feels_like_temperature, max_temperature, min_temperature, humidity, cloud_coverage = getWeather(decoded_request)
-            weather = getWeather(decoded_request)
+        elif request == '3':
+            print("New request intetified; Random Location.")
+            weather = getWeather(random.choice(RandomLocations))
+            print(weather)
             if weather == "Location Not Found":
-                project.setCloudVar('request', '2')
+                variables.set_cloud_variable(variable_name='request', value='2')
                 print("Response submited: Location not Found; Code 2")
             else:
-                #print(weather)
-                y = 0
-                for x in range(0, 9):
-                    #print(weather[y])
-                    try:
-                        project.setCloudVar(variables[y], s2py.encode(weather[y]))
-                    except TypeError:
-                        project.setCloudVar(variables[y], s2py.encode(str(round(weather[y]))))
-                    y += 1
-                project.setCloudVar('request', '1')
+                encoded = variables.encode_list(list(weather))
+                variables.set_cloud_variable(variable_name='response', value=encoded)
+
+                variables.set_cloud_variable(variable_name='request', value='1')
+                print("Response Submited: Date sent; Code 1")
+        else:    
+            print("New request intetified.")
+            location = variables.decode(request)
+            #print(location)
+            #location, condition, description, temperature, feels_like_temperature, max_temperature, min_temperature, humidity, cloud_coverage = getWeather(decoded_request)
+            weather = getWeather(location)
+            print(weather)
+            if weather == "Location Not Found":
+                variables.set_cloud_variable(variable_name='request', value='2')
+                print("Response submited: Location not Found; Code 2")
+            else:
+                encoded = variables.encode_list(list(weather))
+                variables.set_cloud_variable(variable_name='response', value=encoded)
+
+                variables.set_cloud_variable(variable_name='request', value='1')
                 print("Response Submited: Date sent; Code 1")
 
     else:
         print('No new requests.')
-    time.sleep(30) 
+    time.sleep(15) 
